@@ -1,6 +1,6 @@
 // import React from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface UserDataProps {
   address: {
@@ -52,22 +52,60 @@ interface UserDataProps {
 
 function App() {
   const [usersData, setUsersData] = useState([]);
+  const skipCount = useRef(0);
+  const limit = 10;
+
+  const targetRef = useRef<null | HTMLDivElement>(null);
+
+  const fetchData = async function (range: number = 0) {
+    const req = await fetch(
+      `https://dummyjson.com/users?limit=${limit}&skip=${range * limit}`
+    );
+
+    const res = await req.json();
+    const data = res.users;
+
+    setUsersData((prevData) => {
+      if (range > 0) {
+        return [...prevData, ...data];
+      } else {
+        return data;
+      }
+    });
+  };
 
   useEffect(() => {
-    const fetchData = async function () {
-      const req = await fetch(`https://dummyjson.com/users?limit=10&skip=0`);
-
-      const res = await req.json();
-
-      console.log(res.users);
-      const data = res.users;
-      setUsersData(data);
-    };
-
     fetchData();
   }, []);
 
-  // console.log(usersData);
+  useEffect(() => {
+    const options = {
+      root: null,
+      threshold: 0
+    };
+
+    const targetValue = targetRef.current;
+
+    const callBackFn = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting) {
+        fetchData(skipCount.current);
+        skipCount.current += 1;
+      }
+    };
+    const observer = new IntersectionObserver(callBackFn, options);
+    if (targetValue) {
+      observer.observe(targetValue);
+    }
+
+    return () => {
+      if (targetValue) {
+        observer.unobserve(targetValue);
+      }
+    };
+  }, []);
+
+  console.log(usersData, skipCount.current);
+
   const formatUserData = usersData?.map((user: UserDataProps) => {
     return {
       id: user.id,
@@ -81,57 +119,40 @@ function App() {
 
   return (
     <div>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Image</th>
-            <th scope="col">Full Name</th>
-            <th scope="col">Demography</th>
-            <th scope="col">Destination</th>
-            <th scope="col">Location</th>
-          </tr>
-        </thead>
-        <tbody>
-          {formatUserData.length > 0 &&
-            formatUserData?.map((user) => {
-              return (
-                <tr key={user.id}>
-                  <td>{user.id.toString().padStart(2, "0")}</td>
-                  <td className="image">
-                    <img src={user.image} alt={user.fullName} />
-                  </td>
-                  <td>{user.fullName}</td>
-                  <td>{user.demography}</td>
-                  <td>{user.designation}</td>
-                  <td>{user.location}</td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+      <div className="user-list">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Image</th>
+              <th scope="col">Full Name</th>
+              <th scope="col">Demography</th>
+              <th scope="col">Destination</th>
+              <th scope="col">Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formatUserData.length > 0 &&
+              formatUserData?.map((user) => {
+                return (
+                  <tr key={user.id}>
+                    <td>{user.id.toString().padStart(2, "0")}</td>
+                    <td className="image">
+                      <img src={user.image} alt={user.fullName} />
+                    </td>
+                    <td>{user.fullName}</td>
+                    <td>{user.demography}</td>
+                    <td>{user.designation}</td>
+                    <td>{user.location}</td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+        <div className="target" ref={targetRef}></div>
+      </div>
     </div>
   );
 }
 
 export default App;
-
-// {
-//   id,
-//   image,
-//   firstName,
-//   maidenName,
-//   lastName,
-//   gender,
-//   age,
-//   company
-// }
-
-// <tr>
-// <td>id</td>
-// <td>image</td>
-// <td>first,maiden,last</td>
-// <td>gender/age</td>
-// <td>title</td>
-// <td>country</td>
-// </tr>
