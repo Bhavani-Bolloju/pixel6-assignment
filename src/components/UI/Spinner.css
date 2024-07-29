@@ -1,0 +1,28 @@
+.dual-ring,
+.dual-ring:after {
+  box-sizing: border-box;
+}
+.dual-ring {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+}
+.dual-ring:after {
+  content: " ";
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6.4px solid var(--color-header);
+  border-color: var(--color-body) transparent var(--color-body) transparent;
+  animation: dual-ring 1.2s linear infinite;
+}
+@keyframes dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,3 +1,10 @@
+:root {
+  --color-header: #3f3f46;
+  --color-body: #71717a;
+  --color-border: #d4d4d8;
+  --color-accent: #ef4444;
+}
+
 *,
 *::before,
 *::after {
@@ -7,20 +14,31 @@
 }
 
 body {
+  font-family: "Poppins", sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  color: var(--color-header);
+}
+
+h1,
+th {
+  color: var(--color-header);
 }
 
 .user-list {
-  height: 100vh;
+  min-height: 100vh;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
 }
 .users_filter {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 100px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
+  padding: 0 10px;
 }
 
 .filter-list {
@@ -34,8 +52,8 @@ body {
 .filter-list svg {
   width: 20px;
   height: auto;
-  fill: red;
-  color: red;
+  fill: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .current-filter {
@@ -51,14 +69,15 @@ body {
 form {
   display: flex;
   gap: 20px;
+  flex-basis: content;
 }
 
 table {
   border-collapse: collapse;
-  text-align: center;
-  border-radius: 10px;
-  margin: 20px;
+  text-align: start;
+  border-radius: 20px;
   margin-bottom: 30px;
+  overflow: hidden;
 }
 
 img {
@@ -71,8 +90,18 @@ img {
 
 th,
 td {
-  border: 1px solid #d1d5db;
-  padding: 15px 30px;
+  border-bottom: 1px solid var(--color-border);
+  padding: 10px 25px;
+  text-align: start;
+}
+
+tbody {
+  color: var(--color-body);
+}
+
+th {
+  font-weight: 500;
+  padding: 20px 25px;
 }
 
 .target {
@@ -110,5 +139,33 @@ svg {
 }
 
 .active {
-  color: red;
+  color: var(--color-accent);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error {
+  text-align: center;
+  text-transform: capitalize;
+  color: var(--color-accent);
+}
+
+.css-wmy1p7-ReactDropdownSelect {
+  border-radius: 10px !important;
+}
+
+.css-wmy1p7-ReactDropdownSelect span {
+  font-size: 14px !important;
+  color: var(--c);
+}
+/* .react-dropdown-select-dropdown {
+ 
+} */
+
+.css-z2hyoe-ItemComponent.react-dropdown-select-item-selected {
+  background-color: var(--color-body) !important;
 }

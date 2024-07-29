@@ -2,6 +2,7 @@
 import UserList from "./components/UserList";
 import { useAppSelector, useAppDispatch } from "./redux-store/hooks";
 import { filterCountry, filterGender } from "./redux-store/usersSlice";
+import Select from "react-dropdown-select";
 
 function App() {
   const { countries, gender, countryName, genderType } = useAppSelector(
@@ -10,16 +11,25 @@ function App() {
 
   const dispatch = useAppDispatch();
 
-  const handleFilter = function (e: React.ChangeEvent<HTMLSelectElement>) {
-    const value = e.target.value;
-    const name = e.target.name;
-    if (name === "country") {
-      dispatch(filterCountry(value));
-    }
-    if (name === "gender") {
-      dispatch(filterGender(value));
-    }
-  };
+  // const handleFilter = function (e: React.ChangeEvent<HTMLSelectElement>) {
+  //   const value = e.target.value;
+  //   const name = e.target.name;
+  //   if (name === "country") {
+  //     dispatch(filterCountry(value));
+  //   }
+  //   if (name === "gender") {
+  //     dispatch(filterGender(value));
+  //   }
+  // };
+
+  const countriesOptions = countries.map((country, i) => ({
+    value: i + 1,
+    label: country
+  }));
+  const genderOptions = gender.map((country, i) => ({
+    value: i + 1,
+    label: country
+  }));
 
   return (
     <div>
@@ -47,24 +57,36 @@ function App() {
         </div>
         <form>
           <div>
-            <select name="country" onChange={handleFilter}>
-              <option value="">country</option>
-              {countries.map((country, i) => (
-                <option key={i} value={country}>
-                  {country}
-                </option>
-              ))}
-            </select>
+            {countries && (
+              <Select
+                className="select-filter"
+                options={countriesOptions}
+                placeholder="Country"
+                labelField="label"
+                valueField="value"
+                values={[]}
+                required
+                onChange={(value) => {
+                  dispatch(filterCountry(value[0].label));
+                }}
+              />
+            )}
           </div>
           <div>
-            <select name="gender" onChange={handleFilter}>
-              <option value="">gender</option>
-              {gender.map((country, i) => (
-                <option key={i} value={country}>
-                  {country}
-                </option>
-              ))}
-            </select>
+            {gender && (
+              <Select
+                className="w-fit"
+                options={genderOptions}
+                placeholder="Gender"
+                labelField="label"
+                valueField="value"
+                values={[]}
+                required
+                onChange={(value) => {
+                  dispatch(filterGender(value[0].label));
+                }}
+              />
+            )}
           </div>
         </form>
       </div>

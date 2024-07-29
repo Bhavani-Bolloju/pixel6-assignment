@@ -3,9 +3,12 @@ import { UserDataProps } from "../types";
 import { useAppDispatch, useAppSelector } from "../redux-store/hooks";
 import { countryNames, genderIdentities } from "../redux-store/usersSlice";
 import { sortFeilds } from "../redux-store/usersSlice";
+import Spinner from "./UI/Spinner";
 
 function UserList() {
   const [usersData, setUsersData] = useState([]);
+  const [status, setStatus] = useState({ isLoading: false, error: null });
+
   const { countryName, genderType, IDSort, ageSort } = useAppSelector(
     (state) => state.users
   );
@@ -16,31 +19,38 @@ function UserList() {
 
   const fetchData = useCallback(
     async function (range: number = 0) {
-      const req = await fetch(
-        `https://dummyjson.com/users?limit=${limit}&skip=${range * limit}`
-      );
+      try {
+        setStatus((prev) => ({ ...prev, isLoading: true }));
+        const req = await fetch(
+          `https://dummyjson.com/users?limit=${limit}&skip=${range * limit}`
+        );
 
-      const res = await req.json();
-      const data = res.users;
+        const res = await req.json();
+        const data = res.users;
 
-      const filterCountries = [
-        ...new Set(data.map((user: UserDataProps) => user.address.country))
-      ];
-      dispatch(countryNames(filterCountries));
+        const filterCountries = [
+          ...new Set(data.map((user: UserDataProps) => user.address.country))
+        ];
+        dispatch(countryNames(filterCountries));
 
-      const filterGenderTypes = [
-        ...new Set(data.map((user: UserDataProps) => user.gender))
-      ];
+        const filterGenderTypes = [
+          ...new Set(data.map((user: UserDataProps) => user.gender))
+        ];
 
-      dispatch(genderIdentities(filterGenderTypes));
+        dispatch(genderIdentities(filterGenderTypes));
 
-      setUsersData((prevData) => {
-        if (range > 0) {
-          return [...prevData, ...data];
-        } else {
-          return data;
-        }
-      });
+        setUsersData((prevData) => {
+          if (range > 0) {
+            return [...prevData, ...data];
+          } else {
+            return data;
+          }
+        });
+      } catch (error) {
+        setStatus((prev) => ({ ...prev, error: error.message }));
+      } finally {
+        setStatus((prev) => ({ ...prev, isLoading: false }));
+      }
     },
     [dispatch]
   );
@@ -150,51 +160,52 @@ function UserList() {
 
   return (
     <div className="user-list">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">
-              <span className="title">ID</span>
-              <button onClick={() => handleSort("id", "asc")}>
-                {/* up arrow ascending */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className={IDSort === "asc" ? `active` : ""}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-                  />
-                </svg>
-              </button>
-              <button onClick={() => handleSort("id", "des")}>
-                {/* down arrow - descending */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className={IDSort === "des" ? `active` : ""}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-                  />
-                </svg>
-              </button>
-              {/* <span className="sorting-btns"></span> */}
-            </th>
-            <th scope="col">Image</th>
-            <th scope="col">
-              <span className="title">Full Name</span>
-              {/* <button>
+      {usersData && (
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">
+                <span className="title">ID</span>
+                <button onClick={() => handleSort("id", "asc")}>
+                  {/* up arrow ascending */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className={IDSort === "asc" ? `active` : ""}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                    />
+                  </svg>
+                </button>
+                <button onClick={() => handleSort("id", "des")}>
+                  {/* down arrow - descending */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className={IDSort === "des" ? `active` : ""}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                    />
+                  </svg>
+                </button>
+                {/* <span className="sorting-btns"></span> */}
+              </th>
+              <th scope="col">Image</th>
+              <th scope="col">
+                <span className="title">Full Name</span>
+                {/* <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -226,71 +237,80 @@ function UserList() {
                   />
                 </svg>
               </button> */}
-            </th>
-            <th scope="col">
-              <span className="title">Demography</span>
+              </th>
+              <th scope="col">
+                <span className="title">Demography</span>
 
-              <button onClick={() => handleSort("age", "asc")}>
-                {/* up arrow ascending */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className={ageSort === "asc" ? "active" : ""}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-                  />
-                </svg>
-              </button>
-              <button onClick={() => handleSort("age", "des")}>
-                {/* down arrow - descending */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className={ageSort === "des" ? "active" : ""}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-                  />
-                </svg>
-              </button>
-            </th>
-            <th scope="col">Destination</th>
-            <th scope="col">Location</th>
-          </tr>
-        </thead>
-        <tbody>
-          {formatUserData.length > 0 &&
-            formatUserData?.map((user) => {
-              return (
-                <tr key={user.id}>
-                  <td>{user.id.toString().padStart(2, "0")}</td>
-                  <td className="image">
-                    <img src={user.image} alt={user.fullName} />
-                  </td>
-                  <td>{user.fullName}</td>
-                  <td>
-                    {user.gender[0]}/{user.age}
-                  </td>
-                  <td>{user.designation}</td>
-                  <td>
-                    {user.state}, {user.country}
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+                <button onClick={() => handleSort("age", "asc")}>
+                  {/* up arrow ascending */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className={ageSort === "asc" ? "active" : ""}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                    />
+                  </svg>
+                </button>
+                <button onClick={() => handleSort("age", "des")}>
+                  {/* down arrow - descending */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className={ageSort === "des" ? "active" : ""}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                    />
+                  </svg>
+                </button>
+              </th>
+              <th scope="col">Destination</th>
+              <th scope="col">Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formatUserData.length > 0 &&
+              formatUserData?.map((user) => {
+                return (
+                  <tr key={user.id}>
+                    <td>{user.id.toString().padStart(2, "0")}</td>
+                    <td className="image">
+                      <img src={user.image} alt={user.fullName} />
+                    </td>
+                    <td>{user.fullName}</td>
+                    <td>
+                      {user.gender[0].toUpperCase()}/{user.age}
+                    </td>
+                    <td>{user.designation}</td>
+                    <td>
+                      {user.state}, {user.country}
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      )}
+      <div>
+        {status.isLoading && (
+          <div className="loading">
+            <Spinner />
+          </div>
+        )}
+        {status.error && <div className="error">{status.error}</div>}
+      </div>
       <div className="target" ref={targetRef}></div>
     </div>
   );
