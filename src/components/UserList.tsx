@@ -1,15 +1,16 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { UserDataProps } from "../types";
+import { UsersDataProps } from "../types";
 import { useAppDispatch, useAppSelector } from "../redux-store/hooks";
 import { countryNames, genderIdentities } from "../redux-store/usersSlice";
-import { sortFeilds } from "../redux-store/usersSlice";
 import Spinner from "./UI/Spinner";
+import TabelHead from "./TabelHead";
+import UserListItem from "./UserListItem";
 
 function UserList() {
   const [usersData, setUsersData] = useState([]);
-  const [status, setStatus] = useState({ isLoading: false, error: null });
+  const [status, setStatus] = useState({ isLoading: false, error: "" });
 
-  const { countryName, genderType, IDSort, ageSort } = useAppSelector(
+  const { countryName, genderType, IDSort, ageSort, nameSort } = useAppSelector(
     (state) => state.users
   );
   const limit = 10;
@@ -29,12 +30,12 @@ function UserList() {
         const data = res.users;
 
         const filterCountries = [
-          ...new Set(data.map((user: UserDataProps) => user.address.country))
+          ...new Set(data.map((user: UsersDataProps) => user.address.country))
         ];
         dispatch(countryNames(filterCountries));
 
         const filterGenderTypes = [
-          ...new Set(data.map((user: UserDataProps) => user.gender))
+          ...new Set(data.map((user: UsersDataProps) => user.gender))
         ];
 
         dispatch(genderIdentities(filterGenderTypes));
@@ -47,7 +48,10 @@ function UserList() {
           }
         });
       } catch (error) {
-        setStatus((prev) => ({ ...prev, error: error.message }));
+        if (error instanceof Error) {
+          const message = error.message;
+          setStatus((prev) => ({ ...prev, error: message }));
+        }
       } finally {
         setStatus((prev) => ({ ...prev, isLoading: false }));
       }
@@ -85,19 +89,7 @@ function UserList() {
     };
   }, [fetchData]);
 
-  console.log(IDSort, ageSort);
-
-  const handleSort = function (title: string, sort: string) {
-    if (title === "id" && sort !== IDSort) {
-      dispatch(sortFeilds({ title, sort }));
-    }
-
-    if (title === "age" && sort !== ageSort) {
-      dispatch(sortFeilds({ title, sort }));
-    }
-  };
-
-  let formatUserData = usersData?.map((user: UserDataProps) => {
+  let formatUserData = usersData?.map((user: UsersDataProps) => {
     return {
       id: user.id,
       image: user.image,
@@ -158,146 +150,32 @@ function UserList() {
       })
     : formatUserData;
 
+  nameSort === "asc"
+    ? formatUserData.sort((a, b) => a.fullName.localeCompare(b.fullName))
+    : nameSort === "des"
+    ? formatUserData.sort((a, b) => b.fullName.localeCompare(a.fullName))
+    : formatUserData;
+
   return (
     <div className="user-list">
       {usersData && (
         <table>
-          <thead>
-            <tr>
-              <th scope="col">
-                <span className="title">ID</span>
-                <button onClick={() => handleSort("id", "asc")}>
-                  {/* up arrow ascending */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className={IDSort === "asc" ? `active` : ""}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-                    />
-                  </svg>
-                </button>
-                <button onClick={() => handleSort("id", "des")}>
-                  {/* down arrow - descending */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className={IDSort === "des" ? `active` : ""}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-                    />
-                  </svg>
-                </button>
-                {/* <span className="sorting-btns"></span> */}
-              </th>
-              <th scope="col">Image</th>
-              <th scope="col">
-                <span className="title">Full Name</span>
-                {/* <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-                  />
-                </svg>
-              </button>
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-                  />
-                </svg>
-              </button> */}
-              </th>
-              <th scope="col">
-                <span className="title">Demography</span>
-
-                <button onClick={() => handleSort("age", "asc")}>
-                  {/* up arrow ascending */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className={ageSort === "asc" ? "active" : ""}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-                    />
-                  </svg>
-                </button>
-                <button onClick={() => handleSort("age", "des")}>
-                  {/* down arrow - descending */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className={ageSort === "des" ? "active" : ""}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-                    />
-                  </svg>
-                </button>
-              </th>
-              <th scope="col">Destination</th>
-              <th scope="col">Location</th>
-            </tr>
-          </thead>
+          <TabelHead />
           <tbody>
             {formatUserData.length > 0 &&
               formatUserData?.map((user) => {
                 return (
-                  <tr key={user.id}>
-                    <td>{user.id.toString().padStart(2, "0")}</td>
-                    <td className="image">
-                      <img src={user.image} alt={user.fullName} />
-                    </td>
-                    <td>{user.fullName}</td>
-                    <td>
-                      {user.gender[0].toUpperCase()}/{user.age}
-                    </td>
-                    <td>{user.designation}</td>
-                    <td>
-                      {user.state}, {user.country}
-                    </td>
-                  </tr>
+                  <UserListItem
+                    key={user.id}
+                    id={user.id.toString().padStart(2, "0")}
+                    image={user.image}
+                    fullName={user.fullName}
+                    gender={user.gender}
+                    designation={user.designation}
+                    state={user.state}
+                    country={user.country}
+                    age={user.age}
+                  />
                 );
               })}
           </tbody>
@@ -309,9 +187,9 @@ function UserList() {
             <Spinner />
           </div>
         )}
-        {status.error && <div className="error">{status.error}</div>}
+        {status.error !== "" && <div className="error">{status.error}</div>}
       </div>
-      <div className="target" ref={targetRef}></div>
+      <div className="target" ref={targetRef} />
     </div>
   );
 }

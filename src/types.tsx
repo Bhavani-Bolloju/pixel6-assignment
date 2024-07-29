@@ -1,4 +1,4 @@
-export interface UserDataProps {
+export interface UsersDataProps {
   address: {
     address: string;
     city: string;
@@ -44,4 +44,15 @@ export interface UserDataProps {
   userAgent: string;
   username: string;
   weight: number;
+}
+
+export interface UserProp {
+  id: string;
+  image: string;
+  fullName: string;
+  age: number;
+  gender: string;
+  designation: string;
+  state: string;
+  country: string;
 }
