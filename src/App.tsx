@@ -1,156 +1,74 @@
 // import React from "react";
-
-import { useEffect, useState, useRef } from "react";
-
-interface UserDataProps {
-  address: {
-    address: string;
-    city: string;
-    coordinates: void;
-    country: string;
-    postalCode: string;
-    state: string;
-    stateCode: string;
-  };
-  age: number;
-  bank: void;
-  birthDate: string;
-  bloodGroup: string;
-  company: {
-    title: string;
-    name: string;
-    department: string;
-    address: {
-      address: string;
-      city: string;
-      coordinates: void;
-    };
-  };
-  crypto: string;
-  ein: string;
-  email: string;
-  eyecolor: string;
-  firstName: string;
-  gender: string;
-  hair: void;
-  height: number;
-  id: number;
-  image: string;
-  ip: string;
-  lastName: string;
-  macAddress: string;
-  maidenName: string;
-  password: string;
-  phone: string;
-  role: string;
-  ssn: string;
-  university: string;
-  userAgent: string;
-  username: string;
-  weight: number;
-}
+import UserList from "./components/UserList";
+import { useAppSelector, useAppDispatch } from "./redux-store/hooks";
+import { filterCountry, filterGender } from "./redux-store/usersSlice";
 
 function App() {
-  const [usersData, setUsersData] = useState([]);
-  const skipCount = useRef(0);
-  const limit = 10;
+  const { countries, gender, countryName, genderType } = useAppSelector(
+    (state) => state.users
+  );
 
-  const targetRef = useRef<null | HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
 
-  const fetchData = async function (range: number = 0) {
-    const req = await fetch(
-      `https://dummyjson.com/users?limit=${limit}&skip=${range * limit}`
-    );
-
-    const res = await req.json();
-    const data = res.users;
-
-    setUsersData((prevData) => {
-      if (range > 0) {
-        return [...prevData, ...data];
-      } else {
-        return data;
-      }
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const options = {
-      root: null,
-      threshold: 0
-    };
-
-    const targetValue = targetRef.current;
-
-    const callBackFn = (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting) {
-        fetchData(skipCount.current);
-        skipCount.current += 1;
-      }
-    };
-    const observer = new IntersectionObserver(callBackFn, options);
-    if (targetValue) {
-      observer.observe(targetValue);
+  const handleFilter = function (e: React.ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+    const name = e.target.name;
+    if (name === "country") {
+      dispatch(filterCountry(value));
     }
-
-    return () => {
-      if (targetValue) {
-        observer.unobserve(targetValue);
-      }
-    };
-  }, []);
-
-  console.log(usersData, skipCount.current);
-
-  const formatUserData = usersData?.map((user: UserDataProps) => {
-    return {
-      id: user.id,
-      image: user.image,
-      fullName: `${user.firstName} ${user.maidenName} ${user.lastName}`,
-      demography: user.gender[0] + "/" + user.age,
-      designation: user.company.title,
-      location: user.address.state + ", " + user.address.country
-    };
-  });
+    if (name === "gender") {
+      dispatch(filterGender(value));
+    }
+  };
 
   return (
     <div>
-      <div className="user-list">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Image</th>
-              <th scope="col">Full Name</th>
-              <th scope="col">Demography</th>
-              <th scope="col">Destination</th>
-              <th scope="col">Location</th>
-            </tr>
-          </thead>
-          <tbody>
-            {formatUserData.length > 0 &&
-              formatUserData?.map((user) => {
-                return (
-                  <tr key={user.id}>
-                    <td>{user.id.toString().padStart(2, "0")}</td>
-                    <td className="image">
-                      <img src={user.image} alt={user.fullName} />
-                    </td>
-                    <td>{user.fullName}</td>
-                    <td>{user.demography}</td>
-                    <td>{user.designation}</td>
-                    <td>{user.location}</td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-        <div className="target" ref={targetRef}></div>
+      <div className="users_filter">
+        <h1>Employees</h1>
+        <div className="filter-list">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+            />
+          </svg>
+          <div className="current-filter">
+            {countryName !== "" && <span>{countryName}</span>}
+            {genderType !== "" && <span>{genderType}</span>}
+          </div>
+        </div>
+        <form>
+          <div>
+            <select name="country" onChange={handleFilter}>
+              <option value="">country</option>
+              {countries.map((country, i) => (
+                <option key={i} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <select name="gender" onChange={handleFilter}>
+              <option value="">gender</option>
+              {gender.map((country, i) => (
+                <option key={i} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
+          </div>
+        </form>
       </div>
+      <UserList />
     </div>
   );
 }

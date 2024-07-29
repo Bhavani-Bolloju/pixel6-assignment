@@ -6,8 +6,51 @@
   box-sizing: border-box;
 }
 
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .user-list {
   height: 100vh;
+}
+.users_filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 100px;
+  margin-bottom: 50px;
+}
+
+.filter-list {
+  margin-left: auto;
+  margin-right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-list svg {
+  width: 20px;
+  height: auto;
+  fill: red;
+  color: red;
+}
+
+.current-filter {
+  display: flex;
+  align-items: center;
+  text-decoration: underline;
+}
+
+.current-filter span:first-child {
+  margin-right: 10px;
+}
+
+form {
+  display: flex;
+  gap: 20px;
 }
 
 table {
