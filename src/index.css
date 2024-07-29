@@ -78,3 +78,37 @@ td {
 .target {
   padding: 30px 0;
 }
+
+.sorting {
+  display: flex;
+  align-items: center;
+}
+
+.sorting-btns {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.title {
+  margin-right: 10px;
+}
+
+button {
+  background: none;
+  border: none;
+  margin-left: -5px;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+svg {
+  width: auto;
+  height: 15px;
+}
+
+.active {
+  color: red;
+}

@@ -5,13 +5,17 @@ interface StateType {
   gender: string[];
   genderType: string;
   countryName: string;
+  IDSort: string;
+  ageSort: string;
 }
 
 const initialState: StateType = {
   countries: [],
   gender: [],
   genderType: "",
-  countryName: ""
+  countryName: "",
+  IDSort: "asc",
+  ageSort: ""
 };
 export const userSlice = createSlice({
   name: "users",
@@ -19,8 +23,6 @@ export const userSlice = createSlice({
   reducers: {
     countryNames: (state, action) => {
       const countries = [...state.countries];
-      // console.log(action.payload, "payload");
-      // console.log(countries, "state");
       if (countries.length <= 0) {
         state.countries = action.payload;
       } else {
@@ -44,11 +46,29 @@ export const userSlice = createSlice({
     },
     filterGender: (state, action) => {
       state.genderType = action.payload;
+    },
+    sortFeilds: (state, action) => {
+      // state.IDSort = action.payload;
+      console.log(action.payload);
+      if (action.payload.title === "id") {
+        state.IDSort = action.payload.sort;
+        state.ageSort = "";
+      }
+
+      if (action.payload.title === "age") {
+        state.ageSort = action.payload.sort;
+        state.IDSort = "";
+      }
     }
   }
 });
 
-export const { countryNames, genderIdentities, filterCountry, filterGender } =
-  userSlice.actions;
+export const {
+  countryNames,
+  genderIdentities,
+  filterCountry,
+  filterGender,
+  sortFeilds
+} = userSlice.actions;
 
 export default userSlice.reducer;
