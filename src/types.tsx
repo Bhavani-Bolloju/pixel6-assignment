@@ -1,3 +1,20 @@
+export interface ButtonProps {
+  onSort: () => void;
+  title: string;
+  sort: string;
+}
+
+export interface UserProp {
+  id: string;
+  image: string;
+  fullName: string;
+  age: number;
+  gender: string;
+  designation: string;
+  state: string;
+  country: string;
+}
+
 export interface UsersDataProps {
   address: {
     address: string;
@@ -44,15 +61,4 @@ export interface UsersDataProps {
   userAgent: string;
   username: string;
   weight: number;
-}
-
-export interface UserProp {
-  id: string;
-  image: string;
-  fullName: string;
-  age: number;
-  gender: string;
-  designation: string;
-  state: string;
-  country: string;
 }

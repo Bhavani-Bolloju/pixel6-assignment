@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 interface StateType {
   countries: string[];
   gender: string[];
-  genderType: string;
-  countryName: string;
+  genderType: "";
+  countryName: "";
   IDSort: string;
   ageSort: string;
   nameSort: string;
@@ -66,6 +66,10 @@ export const userSlice = createSlice({
         state.IDSort = "";
         state.ageSort = "";
       }
+    },
+    clearFilter: (state) => {
+      state.countryName = "";
+      state.genderType = "";
     }
   }
 });
@@ -75,7 +79,8 @@ export const {
   genderIdentities,
   filterCountry,
   filterGender,
-  sortFields
+  sortFields,
+  clearFilter
 } = userSlice.actions;
 
 export default userSlice.reducer;

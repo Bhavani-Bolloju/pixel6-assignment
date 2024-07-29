@@ -56,14 +56,20 @@ th {
   color: var(--color-accent);
 }
 
-.current-filter {
+.current-filters {
   display: flex;
   align-items: center;
   text-decoration: underline;
+  font-size: 14px;
+  gap: 5px;
+
+  color: var(--color-header);
+  opacity: 0.9;
 }
 
-.current-filter span:first-child {
-  margin-right: 10px;
+.current-filter button {
+  font-size: 14px;
+  font-family: inherit;
 }
 
 form {
@@ -117,6 +123,9 @@ th {
   display: flex;
   align-items: center;
   margin-left: 10px;
+}
+.des {
+  transform: rotate(180deg);
 }
 
 .title {

@@ -1,6 +1,7 @@
 // import { sortFields } from "../redux-store/usersSlice";
 import { useAppDispatch, useAppSelector } from "../redux-store/hooks";
 import { sortFields } from "../redux-store/usersSlice";
+import SortingButton from "./SortingButton";
 
 function TabelHead() {
   const dispatch = useAppDispatch();
@@ -25,114 +26,45 @@ function TabelHead() {
       <tr>
         <th scope="col">
           <span className="title">ID</span>
-          <button onClick={() => handleSort("id", "asc")}>
-            {/* up arrow ascending */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className={IDSort === "asc" ? `active` : ""}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-              />
-            </svg>
-          </button>
-          <button onClick={() => handleSort("id", "des")}>
-            {/* down arrow - descending */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className={IDSort === "des" ? `active` : ""}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-              />
-            </svg>
-          </button>
+
+          <SortingButton
+            onSort={handleSort.bind(null, "id", "asc")}
+            title={IDSort}
+            sort="asc"
+          />
+          <SortingButton
+            onSort={handleSort.bind(null, "id", "des")}
+            title={IDSort}
+            sort="des"
+          />
         </th>
         <th scope="col">Image</th>
         <th scope="col">
           <span className="title">Full Name</span>
-          <button onClick={() => handleSort("name", "asc")}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className={nameSort === "asc" ? `active` : ""}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-              />
-            </svg>
-          </button>
-          <button onClick={() => handleSort("name", "des")}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className={nameSort === "des" ? `active` : ""}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-              />
-            </svg>
-          </button>
+          <SortingButton
+            onSort={handleSort.bind(null, "name", "asc")}
+            title={nameSort}
+            sort="asc"
+          />
+          <SortingButton
+            onSort={handleSort.bind(null, "name", "des")}
+            title={nameSort}
+            sort="des"
+          />
         </th>
         <th scope="col">
           <span className="title">Demography</span>
 
-          <button onClick={() => handleSort("age", "asc")}>
-            {/* up arrow ascending */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className={ageSort === "asc" ? "active" : ""}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-              />
-            </svg>
-          </button>
-          <button onClick={() => handleSort("age", "des")}>
-            {/* down arrow - descending */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className={ageSort === "des" ? "active" : ""}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
-              />
-            </svg>
-          </button>
+          <SortingButton
+            onSort={handleSort.bind(null, "age", "asc")}
+            title={ageSort}
+            sort="asc"
+          />
+          <SortingButton
+            onSort={handleSort.bind(null, "age", "des")}
+            title={ageSort}
+            sort="des"
+          />
         </th>
         <th scope="col">Destination</th>
         <th scope="col">Location</th>
